@@ -15,7 +15,14 @@ namespace SmsReceiverService
 
 		static void Main(string[] args)
 		{
-			bus = new AzureBus();
+      Console.WriteLine("SmsReceiverService");
+      Console.WriteLine("------------------");
+      Console.WriteLine();
+      Console.WriteLine("To set the current phone number type !PH [phonenumber]");
+      Console.WriteLine("Then any text you type will be sent as an SMS from this number.");
+      Console.WriteLine();
+      
+      bus = new AzureBus();
 			bus.Subscribe<SendSms>("SmsReceiverService", sendSmsHandler);
 
 			string input = string.Empty;
@@ -54,7 +61,7 @@ namespace SmsReceiverService
 
 		private static void ParseCommand(string input)
 		{
-			if (input.StartsWith("!PH"))
+			if (input.StartsWith("!PH", StringComparison.InvariantCultureIgnoreCase))
 			{
 				phoneNumber = input.Substring(4);
 				Console.WriteLine("New phonenumber: {0}", phoneNumber);

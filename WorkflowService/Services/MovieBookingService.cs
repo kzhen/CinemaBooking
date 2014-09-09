@@ -71,5 +71,17 @@ namespace WorkflowService.Services
 		{
 			bus.Publish(new SendSms() { PhoneNumber = phoneNumber, Body = "SendMovieSlots" });
 		}
-	}
+
+
+    public void AskForPayment(string phoneNumber)
+    {
+      bus.Publish(new SendSms() { PhoneNumber = phoneNumber, Body = "Please pay" });
+    }
+
+
+    public void SendConfirmation(string phoneNumber)
+    {
+      bus.Publish(new SendSms() { PhoneNumber = phoneNumber, Body = "Your booking has been confirmed" });
+    }
+  }
 }

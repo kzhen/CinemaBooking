@@ -22,7 +22,8 @@ namespace WorkflowService
 			//BetterHandler handler = new BetterHandler(service);
 			TheBestHandler handler = new TheBestHandler(new StateMachineMapper(bus));
 
-			bus.Subscribe<SmsReceived>("workflow-service", handler.Handle);
+      bus.Subscribe<SmsReceived>("workflow-service", handler.Handle);
+      bus.Subscribe<PaymentConfirmed>("workflow-service", handler.Handle);
 
 			Console.ReadKey();
 		}

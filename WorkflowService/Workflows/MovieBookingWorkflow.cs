@@ -28,6 +28,7 @@ namespace WorkflowService.Workflows
 
 			InstanceState(i => i.CurrentState);
 
+      State(() => WaitingForPayment);
 			State(() => WaitingForCinemaSelection);
 			State(() => WaitingForMovieSelection);
 			State(() => WaitingForSlotSelection);
@@ -35,6 +36,7 @@ namespace WorkflowService.Workflows
 
 			//Event(() => Start);
 			//Event(() => SMSReceived);
+      Event(() => PaymentConfirmed);
 			Event(() => ValidResponse);
 			Event(() => InvalidResponse);
 			Event(() => MoreSlotsRequested);
@@ -55,9 +57,16 @@ namespace WorkflowService.Workflows
 				When(SMSReceived, (msg) => !msg.Equals("MORE")).Then((wf, data) => ProcessSlotSelection(wf, data)),
 				When(SMSReceived, (msg) => msg.Equals("MORE")).Then((wf) => this.RaiseEvent(wf, MoreSlotsRequested)),
 				When(MoreSlotsRequested).Then((wf) => SendMovieSlots(wf)),
-				When(ValidResponse).Then(wf => SendConfirmationCode(wf)).Finalize()
+				When(ValidResponse).Then(wf=>AskForPayment(wf)).TransitionTo(WaitingForPayment)
 				);
+      During(WaitingForPayment,
+        When(PaymentConfirmed).Then(wf => SendConfirmationCode(wf)).Finalize());
 		}
+
+    private void AskForPayment(MovieBookingInstance instance)
+    {
+      this.movieBookingService.AskForPayment(instance.PhoneNumber);
+    }
 
 		private void SendUnknownResponse(MovieBookingInstance instance)
 		{
@@ -66,12 +75,13 @@ namespace WorkflowService.Workflows
 
 		private void SendConfirmationCode(MovieBookingInstance instance)
 		{
-
+      this.movieBookingService.SendConfirmation(instance.PhoneNumber);
 		}
 
 		private void ProcessSlotSelection(MovieBookingInstance instance, string data)
 		{
-
+      instance.SlotKey = data;
+      this.RaiseEvent(instance, ValidResponse);
 		}
 
 		private void SendMovieSlots(MovieBookingInstance instance)
@@ -132,5 +142,9 @@ namespace WorkflowService.Workflows
 		public Event ValidResponse { get; set; }
 		public Event InvalidResponse { get; set; }
 		public Event MoreSlotsRequested { get; set; }
-	}
+
+    public Event PaymentConfirmed { get; set; }
+
+    public Automatonymous.State WaitingForPayment { get; set; }
+  }
 }

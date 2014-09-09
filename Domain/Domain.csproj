@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Messages\PaymentConfirmed.cs" />
     <Compile Include="Messages\SendSms.cs" />
     <Compile Include="Messages\SmsReceived.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -22,6 +22,18 @@ namespace WorkflowService.TopicHandler
 			this.mapper = mapper;
 		}
 
+    public void Handle(PaymentConfirmed confirmation)
+    {
+      if (workflowInstances.ContainsKey(confirmation.PhoneNumber))
+      {
+        Workflows.MovieBookingInstance instance = (Workflows.MovieBookingInstance)workflowInstances[confirmation.PhoneNumber];
+        var stateMachine = this.mapper.GetStateMachine(instance.GetType());
+
+        Workflows.MovieBookingWorkflow wf = (Workflows.MovieBookingWorkflow)mapper.GetStateMachine(instance.GetType());
+        wf.RaiseEvent(instance, wf.PaymentConfirmed);
+      }
+    }
+
 		public void Handle(SmsReceived sms)
 		{
 			if (workflowInstances.ContainsKey(sms.PhoneNumber))

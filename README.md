@@ -27,6 +27,11 @@ There are several advantages of having the StateMachines inherit from the `BaseS
  
 The `BaseStateMachine<T>` also implements the `IWorkflow` interface, this is what provides the ability to interact with the StateMachine without know the concrete type.
 
+### Reusable Workflows ###
+
+...
+
+
 ### Wiring it up ###
 
 ...

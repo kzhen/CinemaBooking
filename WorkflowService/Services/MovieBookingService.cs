@@ -42,7 +42,7 @@ namespace WorkflowService.Services
 		{
 			int idx = ALPHABET.IndexOf(data.ToUpper());
 
-			return (movieList.Count > idx) && (idx > 0) ? movieList[idx] : null;
+			return (movieList.Count > idx) && (idx >= 0) ? movieList[idx] : null;
 		}
 
 		public void SendCinemaSelection(string phoneNumber, List<string> cineams)
@@ -71,5 +71,10 @@ namespace WorkflowService.Services
 		{
 			bus.Publish(new SendSms() { PhoneNumber = phoneNumber, Body = "SendMovieSlots" });
 		}
-	}
+
+    public void SendConfirmation(string phoneNumber)
+    {
+      bus.Publish(new SendSms() { PhoneNumber = phoneNumber, Body = "You confirmation code is:" });
+    }
+  }
 }

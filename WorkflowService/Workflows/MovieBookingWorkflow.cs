@@ -13,13 +13,12 @@ namespace WorkflowService.Workflows
 	public class MovieBookingInstance : BaseInstance
 	{
 		public string PhoneNumber { get; set; }
-		public State CurrentState { get; set; }
 		public string CinemaKey { get; set; }
 		public string MovieKey { get; set; }
 		public string SlotKey { get; set; }
 	}
 
-	public class MovieBookingWorkflow : BaseStateMachine<MovieBookingInstance> //AutomatonymousStateMachine<MovieBookingInstance>
+	public class MovieBookingWorkflow : BaseStateMachine<MovieBookingInstance>
 	{
 		private readonly IMovieBookingService movieBookingService;
 		public MovieBookingWorkflow(IMovieBookingService service)
@@ -33,8 +32,6 @@ namespace WorkflowService.Workflows
 			State(() => WaitingForSlotSelection);
 			State(() => Completed);
 
-			//Event(() => Start);
-			//Event(() => SMSReceived);
 			Event(() => ValidResponse);
 			Event(() => InvalidResponse);
 			Event(() => MoreSlotsRequested);
@@ -66,12 +63,19 @@ namespace WorkflowService.Workflows
 
 		private void SendConfirmationCode(MovieBookingInstance instance)
 		{
-
+      this.movieBookingService.SendConfirmation(instance.PhoneNumber);
 		}
 
 		private void ProcessSlotSelection(MovieBookingInstance instance, string data)
 		{
-
+      if (string.IsNullOrWhiteSpace(data))
+      {
+        this.RaiseEvent(instance, InvalidResponse);
+      }
+      else
+      {
+        this.RaiseEvent(instance, ValidResponse);
+      }
 		}
 
 		private void SendMovieSlots(MovieBookingInstance instance)
@@ -126,9 +130,6 @@ namespace WorkflowService.Workflows
 		public State WaitingForMovieSelection { get; set; }
 		public State WaitingForSlotSelection { get; set; }
 		public State Completed { get; set; }
-
-		//public Event<string> Start { get; set; }
-		//public Event<string> SMSReceived { get; set; }
 		public Event ValidResponse { get; set; }
 		public Event InvalidResponse { get; set; }
 		public Event MoreSlotsRequested { get; set; }

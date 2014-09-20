@@ -27,6 +27,9 @@ namespace WorkflowService.Wiring
 			Event(() => SMSReceived);
 			Event(() => Start);
 			Event(() => InvalidResponse);
+
+			//Ideally we would setup common event handlers here e.g. InvalidResponse should fire the SendUnknownResponse method
+			//this could be done by implementing an AbstractFactory to create the actual State Machine, see http://stackoverflow.com/a/2747280
 		}
 
 		protected virtual void SendUnknownResponse(T instance)

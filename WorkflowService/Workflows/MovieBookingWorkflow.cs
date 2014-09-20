@@ -34,6 +34,8 @@ namespace WorkflowService.Workflows
 			Event(() => MoreSlotsRequested);
 
 			//Ideally we would have this in the BaseStateMachine, however it needs to be executed after all of the States have been setup
+			//This could be fixed by using an AbstractFactory to create an instance of the actual workflow classes and force a call
+			//to a method that executes this: http://stackoverflow.com/a/2747280
 			DuringAny(When(InvalidResponse).Then(wf => SendUnknownResponse(wf)));
 
 			Initially(When(Start).Then((wf, data) => SendListOfCinemas(wf, data)).TransitionTo(WaitingForCinemaSelection));

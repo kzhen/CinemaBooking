@@ -12,12 +12,12 @@ using WorkflowService.Wiring;
 
 namespace WorkflowService.TopicHandler
 {
-	public class TheBestHandler
+	public class SmsHandler
 	{
 		private Dictionary<string, BaseInstance> workflowInstances = new Dictionary<string, BaseInstance>();
 		private readonly IStateMachineMapper mapper;
 
-		public TheBestHandler(IStateMachineMapper mapper)
+		public SmsHandler(IStateMachineMapper mapper)
 		{
 			this.mapper = mapper;
 		}

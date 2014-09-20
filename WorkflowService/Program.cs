@@ -20,7 +20,7 @@ namespace WorkflowService
 			IMovieBookingService movieBookingService = new MovieBookingService(bus);
 			ICommonWorkflowService commonWorkflowService = new CommonWorkflowService(bus);
 			
-			TheBestHandler handler = new TheBestHandler(new StateMachineMapper(bus, commonWorkflowService));
+			SmsHandler handler = new SmsHandler(new StateMachineMapper(bus, commonWorkflowService));
 
 			bus.Subscribe<SmsReceived>("workflow-service", handler.Handle);
 

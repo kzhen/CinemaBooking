@@ -12,7 +12,6 @@ namespace WorkflowService.Services
 		string GetMovie(string data);
 		void SendCinemaSelection(string phoneNumber, List<string> cinemas);
 		void SendMovieSelection(string phoneNumber, string cinemaKey);
-		void SendUnknownResponse(string phoneNumber);
 		void SendMovieSlots(string phoneNumber, string cinemaKey, string movieKey);
     void SendConfirmation(string phoneNumber);
   }

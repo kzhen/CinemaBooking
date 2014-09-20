@@ -17,10 +17,10 @@ namespace WorkflowService
 		{
 			IBus bus = new AzureBus();
 
-			//SmsReceivedHandler handler = new SmsReceivedHandler(bus);
-			IMovieBookingService service = new MovieBookingService(bus);
-			//BetterHandler handler = new BetterHandler(service);
-			TheBestHandler handler = new TheBestHandler(new StateMachineMapper(bus));
+			IMovieBookingService movieBookingService = new MovieBookingService(bus);
+			ICommonWorkflowService commonWorkflowService = new CommonWorkflowService(bus);
+			
+			TheBestHandler handler = new TheBestHandler(new StateMachineMapper(bus, commonWorkflowService));
 
 			bus.Subscribe<SmsReceived>("workflow-service", handler.Handle);
 

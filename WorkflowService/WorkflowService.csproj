@@ -60,6 +60,7 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\ICommonWorkflowService.cs" />
     <Compile Include="Services\MovieBookingService.cs" />
     <Compile Include="TopicHandler\TheBestHandler.cs" />
     <Compile Include="TopicHandler\BetterHandler.cs" />

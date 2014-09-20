@@ -61,6 +61,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="CancelBookingWorkflowTests.cs" />
     <Compile Include="UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -71,6 +72,10 @@
     <ProjectReference Include="..\Domain\Domain.csproj">
       <Project>{9bf5eace-b14a-405a-9e46-0d0008a5931b}</Project>
       <Name>Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj">
+      <Project>{460529e5-0e7c-4dec-b802-caf77b7d3d09}</Project>
+      <Name>Infrastructure</Name>
     </ProjectReference>
     <ProjectReference Include="..\WorkflowService\WorkflowService.csproj">
       <Project>{89846c19-a630-489e-94f9-831475f58ea6}</Project>

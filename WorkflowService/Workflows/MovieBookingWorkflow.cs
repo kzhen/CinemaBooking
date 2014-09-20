@@ -12,7 +12,6 @@ namespace WorkflowService.Workflows
 {
 	public class MovieBookingInstance : BaseInstance
 	{
-		public string PhoneNumber { get; set; }
 		public string CinemaKey { get; set; }
 		public string MovieKey { get; set; }
 		public string SlotKey { get; set; }
@@ -21,11 +20,10 @@ namespace WorkflowService.Workflows
 	public class MovieBookingWorkflow : BaseStateMachine<MovieBookingInstance>
 	{
 		private readonly IMovieBookingService movieBookingService;
-		public MovieBookingWorkflow(IMovieBookingService service)
+		public MovieBookingWorkflow(IMovieBookingService service, ICommonWorkflowService commonWorkflowService)
+			: base(commonWorkflowService)
 		{
 			this.movieBookingService = service;
-
-			InstanceState(i => i.CurrentState);
 
 			State(() => WaitingForCinemaSelection);
 			State(() => WaitingForMovieSelection);
@@ -33,11 +31,10 @@ namespace WorkflowService.Workflows
 			State(() => Completed);
 
 			Event(() => ValidResponse);
-			Event(() => InvalidResponse);
 			Event(() => MoreSlotsRequested);
 
-			DuringAny(
-				When(InvalidResponse).Then(wf => SendUnknownResponse(wf)));
+			//Ideally we would have this in the BaseStateMachine, however it needs to be executed after all of the States have been setup
+			DuringAny(When(InvalidResponse).Then(wf => SendUnknownResponse(wf)));
 
 			Initially(When(Start).Then((wf, data) => SendListOfCinemas(wf, data)).TransitionTo(WaitingForCinemaSelection));
 			During(WaitingForCinemaSelection,
@@ -56,26 +53,21 @@ namespace WorkflowService.Workflows
 				);
 		}
 
-		private void SendUnknownResponse(MovieBookingInstance instance)
-		{
-			this.movieBookingService.SendUnknownResponse(instance.PhoneNumber);
-		}
-
 		private void SendConfirmationCode(MovieBookingInstance instance)
 		{
-      this.movieBookingService.SendConfirmation(instance.PhoneNumber);
+			this.movieBookingService.SendConfirmation(instance.PhoneNumber);
 		}
 
 		private void ProcessSlotSelection(MovieBookingInstance instance, string data)
 		{
-      if (string.IsNullOrWhiteSpace(data))
-      {
-        this.RaiseEvent(instance, InvalidResponse);
-      }
-      else
-      {
-        this.RaiseEvent(instance, ValidResponse);
-      }
+			if (string.IsNullOrWhiteSpace(data))
+			{
+				this.RaiseEvent(instance, InvalidResponse);
+			}
+			else
+			{
+				this.RaiseEvent(instance, ValidResponse);
+			}
 		}
 
 		private void SendMovieSlots(MovieBookingInstance instance)
@@ -131,7 +123,6 @@ namespace WorkflowService.Workflows
 		public State WaitingForSlotSelection { get; set; }
 		public State Completed { get; set; }
 		public Event ValidResponse { get; set; }
-		public Event InvalidResponse { get; set; }
 		public Event MoreSlotsRequested { get; set; }
 	}
 }

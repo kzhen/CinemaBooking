@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WorkflowService.Services;
 using WorkflowService.Wiring;
 
 namespace WorkflowService.Workflows
@@ -17,8 +18,8 @@ namespace WorkflowService.Workflows
 	internal class AuthenticatedChangeBookingWorkflow : BaseAuthenticationWorkflow<AuthenticatedChangeBookingInstance> //BaseStateMachine<ChangeBookingInstance>
 	{
 		private readonly IBus bus;
-		public AuthenticatedChangeBookingWorkflow(IBus bus)
-			: base(bus)
+		public AuthenticatedChangeBookingWorkflow(IBus bus, ICommonWorkflowService commonWorkflowService)
+			: base(bus, commonWorkflowService)
 		{
 			this.bus = bus;
 

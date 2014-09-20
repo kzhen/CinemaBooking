@@ -61,12 +61,6 @@ namespace WorkflowService.Services
 			bus.Publish(new SendSms() { PhoneNumber = phoneNumber, Body = body });
 		}
 
-
-		public void SendUnknownResponse(string phoneNumber)
-		{
-			bus.Publish(new SendSms() { PhoneNumber = phoneNumber, Body = "That was unrecognized, please try again!" });
-		}
-
 		public void SendMovieSlots(string phoneNumber, string cinemaKey, string movieKey)
 		{
 			bus.Publish(new SendSms() { PhoneNumber = phoneNumber, Body = "SendMovieSlots" });
@@ -74,7 +68,14 @@ namespace WorkflowService.Services
 
     public void SendConfirmation(string phoneNumber)
     {
-      bus.Publish(new SendSms() { PhoneNumber = phoneNumber, Body = "You confirmation code is:" });
+			Random r = new Random();
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < 10; i++)
+			{
+				sb.Append(ALPHABET[r.Next(0, 25)]);
+			}
+
+      bus.Publish(new SendSms() { PhoneNumber = phoneNumber, Body = "You confirmation code is: " + sb.ToString() });
     }
   }
 }

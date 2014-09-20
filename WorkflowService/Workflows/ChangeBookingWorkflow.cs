@@ -6,21 +6,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WorkflowService.Services;
 using WorkflowService.Wiring;
 
 namespace WorkflowService.Workflows
 {
 	internal class ChangeBookingInstance : BaseInstance
 	{
-		public string PhoneNumber { get; set; }
-
 		public string BookingKey { get; set; }
 	}
 	internal class ChangeBookingWorkflow : BaseStateMachine<ChangeBookingInstance>
 	{
 		private readonly IBus bus;
-		public ChangeBookingWorkflow(IBus bus)
-			: base()
+		public ChangeBookingWorkflow(IBus bus, ICommonWorkflowService commonWorkflowService)
+			: base(commonWorkflowService)
 		{
 			this.bus = bus;
 

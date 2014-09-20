@@ -12,12 +12,15 @@ namespace WorkflowServiceTests
 	{
 		private MovieBookingWorkflow sut; //system-under-test
 		private IMovieBookingService service;
+		private ICommonWorkflowService commonWorkflowService;
 
 		[TestInitialize]
 		public void TestInitialize()
 		{
 			service = Mock.Of<IMovieBookingService>();
-			sut = new MovieBookingWorkflow(service);
+			commonWorkflowService = Mock.Of<ICommonWorkflowService>();
+
+			sut = new MovieBookingWorkflow(service, commonWorkflowService);
 		}
 
 		[TestMethod]

@@ -6,20 +6,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WorkflowService.Services;
 using WorkflowService.Wiring;
 
 namespace WorkflowService.Workflows
 {
 	public class AuthenticationInstance : BaseInstance
 	{
-		public string PhoneNumber { get; set; }
 	}
 
 	public abstract class BaseAuthenticationWorkflow<T> : BaseStateMachine<T>
 		where T : AuthenticationInstance
 	{
 		private readonly IBus bus;
-		public BaseAuthenticationWorkflow(IBus bus)
+		public BaseAuthenticationWorkflow(IBus bus, ICommonWorkflowService commonWorkflowService)
+			: base(commonWorkflowService)
 		{
 			this.bus = bus;
 

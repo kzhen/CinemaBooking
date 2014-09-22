@@ -63,11 +63,20 @@ namespace WorkflowService.Services
 
 		public void SendMovieSlots(string phoneNumber, string cinemaKey, string movieKey)
 		{
-			bus.Publish(new SendSms() { PhoneNumber = phoneNumber, Body = "SendMovieSlots" });
+			List<DateTime> slotList = new List<DateTime>();
+			double[] prices = new double[] { 10, 5, 8, 10, 12 };
+
+			for (int i = 0; i < 5; i++)
+			{
+				slotList.Add(DateTime.Now.AddHours(i));
+			}
+
+			string list = string.Join(", ", slotList.Select((i, idx) => { return String.Format("{0} {1} (£{2})", ALPHABET[idx], i, prices[idx]); }));
+			bus.Publish(new SendSms() { PhoneNumber = phoneNumber, Body = "Please select a movie time: " + list });
 		}
 
-    public void SendConfirmation(string phoneNumber)
-    {
+		public void SendConfirmation(string phoneNumber)
+		{
 			Random r = new Random();
 			StringBuilder sb = new StringBuilder();
 			for (int i = 0; i < 10; i++)
@@ -75,7 +84,7 @@ namespace WorkflowService.Services
 				sb.Append(ALPHABET[r.Next(0, 25)]);
 			}
 
-      bus.Publish(new SendSms() { PhoneNumber = phoneNumber, Body = "You confirmation code is: " + sb.ToString() });
-    }
-  }
+			bus.Publish(new SendSms() { PhoneNumber = phoneNumber, Body = "You confirmation code is: " + sb.ToString() });
+		}
+	}
 }

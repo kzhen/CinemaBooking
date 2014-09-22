@@ -16,10 +16,12 @@ namespace WorkflowService.TopicHandler
 	{
 		private Dictionary<string, BaseInstance> workflowInstances = new Dictionary<string, BaseInstance>();
 		private readonly IStateMachineMapper mapper;
+		private readonly IBus bus;
 
-		public SmsHandler(IStateMachineMapper mapper)
+		public SmsHandler(IStateMachineMapper mapper, IBus bus)
 		{
 			this.mapper = mapper;
+			this.bus = bus;
 		}
 
 		public void Handle(SmsReceived sms)
@@ -31,6 +33,11 @@ namespace WorkflowService.TopicHandler
 				var stateMachine = this.mapper.GetStateMachine(instance.GetType());
 
 				stateMachine.RaiseAnEvent(instance, stateMachine.SMSReceived, sms.Body);
+
+				if (instance.CurrentState == stateMachine.Final)
+				{
+					workflowInstances.Remove(sms.PhoneNumber);
+				}
 			}
 			else if (this.mapper.MappingExists(sms.Body))
 			{
@@ -43,7 +50,7 @@ namespace WorkflowService.TopicHandler
 			}
 			else
 			{
-				//send back an error :-(
+				bus.Publish(new SendSms() { PhoneNumber = sms.PhoneNumber, Body = "That command was not recognized." });
 			}
 		}
 	}

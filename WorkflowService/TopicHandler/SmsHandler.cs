@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WorkflowService.Services;
 using WorkflowService.Wiring;
+using WorkflowService.Workflows;
 
 namespace WorkflowService.TopicHandler
 {
@@ -28,15 +29,34 @@ namespace WorkflowService.TopicHandler
 		{
 			if (workflowInstances.ContainsKey(sms.PhoneNumber))
 			{
-				//then raise the SMS received event
-				BaseInstance instance = workflowInstances[sms.PhoneNumber];
-				var stateMachine = this.mapper.GetStateMachine(instance.GetType());
-
-				stateMachine.RaiseAnEvent(instance, stateMachine.SMSReceived, sms.Body);
-
-				if (instance.CurrentState == stateMachine.Final)
+				if (this.mapper.MappingExists(sms.Body))
 				{
-					workflowInstances.Remove(sms.PhoneNumber);
+					ForkInstance instance = new ForkInstance()
+					{
+						ForkingFromInstance = workflowInstances[sms.PhoneNumber],
+						ForkingFromWorkflow = this.mapper.GetStateMachine(workflowInstances[sms.PhoneNumber].GetType()),
+						ForkingToKeyword = sms.Body,
+						PhoneNumber = sms.PhoneNumber
+					};
+
+					var stateMachine = this.mapper.GetStateMachine(instance.GetType());
+
+					stateMachine.RaiseAnEvent(instance, stateMachine.Start, sms.PhoneNumber);
+
+					this.workflowInstances[sms.PhoneNumber] = instance;
+				}
+				else
+				{
+					//then raise the SMS received event
+					BaseInstance instance = workflowInstances[sms.PhoneNumber];
+					var stateMachine = this.mapper.GetStateMachine(instance.GetType());
+
+					stateMachine.RaiseAnEvent(instance, stateMachine.SMSReceived, sms.Body);
+
+					if (instance.CurrentState == stateMachine.Final)
+					{
+						workflowInstances.Remove(sms.PhoneNumber);
+					}
 				}
 			}
 			else if (this.mapper.MappingExists(sms.Body))

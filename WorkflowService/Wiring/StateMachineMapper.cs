@@ -37,9 +37,9 @@ namespace WorkflowService.Wiring
 		private readonly Dictionary<Type, Func<IBus, ICommonWorkflowService, IWorkflow>> stateMachineTypeMapper = new Dictionary<Type, Func<IBus, ICommonWorkflowService, IWorkflow>>()
 		{
 			{ typeof(AuthenticatedChangeBookingInstance), (bus, commonWorkflowService) => new AuthenticatedChangeBookingWorkflow(bus, commonWorkflowService) },
-			{ typeof(Workflows.MovieBookingInstance), (bus, commonWorkflowService) => new Workflows.MovieBookingWorkflow(new MovieBookingService(bus), commonWorkflowService) }
+			{ typeof(Workflows.MovieBookingInstance), (bus, commonWorkflowService) => new Workflows.MovieBookingWorkflow(new MovieBookingService(bus), commonWorkflowService) },
+			{ typeof(Workflows.ForkInstance), (bus, commonWorkflowService) => new Workflows.ForkStateMachine(commonWorkflowService, bus) }
 		};
-		
 
 		public StateMachineMapper(IBus bus, ICommonWorkflowService commonWorkflowService)
 		{

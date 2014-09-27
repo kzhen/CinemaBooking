@@ -70,6 +70,8 @@
     <Compile Include="Services\IMovieBookingService.cs" />
     <Compile Include="Workflows\AuthenticatedChangeBookingWorkflow.cs" />
     <Compile Include="Workflows\ChangeBookingWorkflow.cs" />
+    <Compile Include="Workflows\ForkInstance.cs" />
+    <Compile Include="Workflows\ForkStateMachine.cs" />
     <Compile Include="Workflows\MovieBookingWorkflow.cs" />
     <Compile Include="Workflows\BaseAuthenticationWorkflow.cs" />
   </ItemGroup>

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WorkflowService.Messages;
 using WorkflowService.Services;
 using WorkflowService.TopicHandler;
 using WorkflowService.Wiring;
@@ -19,10 +20,14 @@ namespace WorkflowService
 
 			IMovieBookingService movieBookingService = new MovieBookingService(bus);
 			ICommonWorkflowService commonWorkflowService = new CommonWorkflowService(bus);
-			
-			SmsHandler handler = new SmsHandler(new StateMachineMapper(bus, commonWorkflowService), bus);
+      IStateMachineMapper stateMachineMapper = new StateMachineMapper(bus, commonWorkflowService);
+      WorkflowInstanceRepository instanceRepository = new WorkflowInstanceRepository();
 
-			bus.Subscribe<SmsReceived>("workflow-service", handler.Handle);
+			SmsHandler smsHandler = new SmsHandler(stateMachineMapper, bus, instanceRepository);
+      ForkHandler forkHandler = new ForkHandler(instanceRepository, stateMachineMapper);
+
+			bus.Subscribe<SmsReceived>("workflow-service", smsHandler.Handle);
+      bus.Subscribe<ForkFinished>("workflow-service", forkHandler.Handle);
 
 			Console.ReadKey();
 		}

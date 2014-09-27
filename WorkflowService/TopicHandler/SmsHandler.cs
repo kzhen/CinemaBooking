@@ -15,58 +15,61 @@ namespace WorkflowService.TopicHandler
 {
 	public class SmsHandler
 	{
-		private Dictionary<string, BaseInstance> workflowInstances = new Dictionary<string, BaseInstance>();
 		private readonly IStateMachineMapper mapper;
 		private readonly IBus bus;
+    private readonly IWorkflowInstanceRepository instanceRepository;
 
-		public SmsHandler(IStateMachineMapper mapper, IBus bus)
+
+    public SmsHandler(IStateMachineMapper mapper, IBus bus, IWorkflowInstanceRepository instanceRepository)
 		{
 			this.mapper = mapper;
 			this.bus = bus;
+      this.instanceRepository = instanceRepository;
 		}
 
 		public void Handle(SmsReceived sms)
 		{
-			if (workflowInstances.ContainsKey(sms.PhoneNumber))
+      BaseInstance instance = instanceRepository.Peek(sms.PhoneNumber);
+
+			if (instance != null)
 			{
-				if (this.mapper.MappingExists(sms.Body))
+				if (this.mapper.MappingExists(sms.Body) && !(instance is ForkInstance))
 				{
-					ForkInstance instance = new ForkInstance()
+					ForkInstance fork = new ForkInstance()
 					{
-						ForkingFromInstance = workflowInstances[sms.PhoneNumber],
-						ForkingFromWorkflow = this.mapper.GetStateMachine(workflowInstances[sms.PhoneNumber].GetType()),
+						ForkingFromInstance = instance,
+						ForkingFromWorkflow = this.mapper.GetStateMachine(instance.GetType()),
 						ForkingToKeyword = sms.Body,
 						PhoneNumber = sms.PhoneNumber
 					};
 
-					var stateMachine = this.mapper.GetStateMachine(instance.GetType());
+					var stateMachine = this.mapper.GetStateMachine(fork.GetType());
 
-					stateMachine.RaiseAnEvent(instance, stateMachine.Start, sms.PhoneNumber);
+					stateMachine.RaiseAnEvent(fork, stateMachine.Start, sms.PhoneNumber);
 
-					this.workflowInstances[sms.PhoneNumber] = instance;
+          instanceRepository.Push(sms.PhoneNumber, fork);
 				}
 				else
 				{
 					//then raise the SMS received event
-					BaseInstance instance = workflowInstances[sms.PhoneNumber];
 					var stateMachine = this.mapper.GetStateMachine(instance.GetType());
 
 					stateMachine.RaiseAnEvent(instance, stateMachine.SMSReceived, sms.Body);
 
 					if (instance.CurrentState == stateMachine.Final)
 					{
-						workflowInstances.Remove(sms.PhoneNumber);
+						instanceRepository.Pop(sms.PhoneNumber);
 					}
 				}
 			}
 			else if (this.mapper.MappingExists(sms.Body))
 			{
 				//make a new state machine instance
-				BaseInstance instance = this.mapper.GetStateMachineInstance(sms.Body);
+				instance = this.mapper.GetStateMachineInstance(sms.Body);
 				IWorkflow stateMachine = this.mapper.GetStateMachine(sms.Body);
 
 				stateMachine.RaiseAnEvent(instance, stateMachine.Start, sms.PhoneNumber);
-				this.workflowInstances[sms.PhoneNumber] = instance;
+        instanceRepository.Push(sms.PhoneNumber, instance);
 			}
 			else
 			{

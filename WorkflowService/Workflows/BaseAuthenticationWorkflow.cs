@@ -13,6 +13,8 @@ namespace WorkflowService.Workflows
 {
 	public class AuthenticationInstance : BaseInstance
 	{
+		public string Surname { get; set; }
+		public DateTime DateOfBirth { get; set; }
 	}
 
 	public abstract class BaseAuthenticationWorkflow<T> : BaseStateMachine<T>
@@ -26,6 +28,7 @@ namespace WorkflowService.Workflows
 
 			State(() => WaitingForSurname);
 			State(() => WaitingForDob);
+			State(() => CheckingCredentials);
 			State(() => Authorized);
 			State(() => Unauthorized);
 
@@ -47,24 +50,39 @@ namespace WorkflowService.Workflows
 				When(ValidResponse).TransitionTo(Authorized),
 				When(InvalidResponse).TransitionTo(Unauthorized)
 				);
-
+			During(CheckingCredentials,
+				When(CheckingCredentials.Enter).Then(wf => AuthorizeCredentials(wf))
+				);
 			During(Authorized, When(Authorized.Enter).Then(wf => OnPassedAuthentication(wf)));
 			During(Unauthorized, When(Unauthorized.Enter).Then(wf => OnFailedAuthentication(wf)));
 		}
 
-		private void AskAgain(T wf)
+		private void AuthorizeCredentials(T wf)
 		{
-			this.bus.Publish(new SendSms() { PhoneNumber = wf.PhoneNumber, Body = "Unrecognized." });
-		}
-		private void ProcessDob(T wf, string data)
-		{
-			if (string.IsNullOrWhiteSpace(data))
+			if (wf.Surname == "Ken" && wf.DateOfBirth.Date == new DateTime())
 			{
-				this.RaiseEvent(wf, InvalidResponse);
+				this.TransitionToState(wf, Authorized);
 			}
 			else
 			{
+				this.TransitionToState(wf, Unauthorized);
+			}
+
+		}
+
+		private void ProcessDob(T wf, string data)
+		{
+			DateTime dob;
+			bool success = DateTime.TryParse(data, out dob);
+
+			if (success)
+			{
+				wf.DateOfBirth = dob;
 				this.RaiseEvent(wf, ValidResponse);
+			}
+			else
+			{
+				this.RaiseEvent(wf, InvalidResponse);
 			}
 		}
 
@@ -81,6 +99,7 @@ namespace WorkflowService.Workflows
 			}
 			else
 			{
+				wf.Surname = data;
 				this.RaiseEvent(wf, ValidResponse);
 			}
 		}
@@ -97,8 +116,10 @@ namespace WorkflowService.Workflows
 		public State WaitingForDob { get; set; }
 		public State Authorized { get; set; }
 		public State Unauthorized { get; set; }
+		public State CheckingCredentials { get; set; }
 
 		public Event ValidResponse { get; set; }
 		public Event InvalidResponse { get; set; }
+
 	}
 }

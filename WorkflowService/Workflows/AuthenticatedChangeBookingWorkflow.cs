@@ -39,13 +39,13 @@ namespace WorkflowService.Workflows
 				When(BookingsFound, numFound => numFound > 1).Then(wf => DisambiguateBooking(wf)).TransitionTo(WaitingForSelectionDisambiguation)
 				);
 			During(WaitingForSelectionDisambiguation,
-				When(Continue).Then((wf, data) => TheNextThing(wf, data)).TransitionTo(WaitingForConfirmation));
-
+				When(Continue).Then((wf, data) => TheNextThing(wf, data)).Then(wf => SendConfirmationQuestion(wf)).TransitionTo(WaitingForConfirmation));
 		}
 
 		private void TheNextThing(AuthenticatedChangeBookingInstance wf, string data)
 		{
 			wf.BookingKey = data;
+
 		}
 
 		private void DisambiguateBooking(AuthenticatedChangeBookingInstance wf)

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WorkflowService.Messages;
 using WorkflowService.Services;
 using WorkflowService.Wiring;
 
@@ -25,17 +26,37 @@ namespace WorkflowService.Workflows
 
 			State(() => WaitingForBookingSelection);
 			State(() => WaitingForConfirmation);
+			State(() => WaitingForSelectionDisambiguation);
+
 			State(() => Starting);
-			Event(() => ValidResponse);
+
+			Event(() => BookingsFound);
 
 			During(Starting,
-				When(Starting.Enter)
-				.Then(wf => SendListOfBookings(wf))
-				.TransitionTo(WaitingForBookingSelection));
-			During(WaitingForBookingSelection,
-				When(SMSReceived).Then((wf, data) => ProcessBookingSelection(wf, data)),
-				When(ValidResponse).Then(wf => SendConfirmationQuestion(wf)).TransitionTo(WaitingForConfirmation)
+				When(Starting.Enter).Then(wf => LookupBookings(wf)),
+				When(BookingsFound, numFound => numFound == 0).Then(wf => { /*send sorry*/ }).Finalize(),
+				When(BookingsFound, numFound => numFound == 1).Then(wf => SendConfirmationQuestion(wf)).TransitionTo(WaitingForConfirmation),
+				When(BookingsFound, numFound => numFound > 1).Then(wf => DisambiguateBooking(wf)).TransitionTo(WaitingForSelectionDisambiguation)
 				);
+			During(WaitingForSelectionDisambiguation,
+				When(Continue).Then((wf, data) => TheNextThing(wf, data)).TransitionTo(WaitingForConfirmation));
+
+		}
+
+		private void TheNextThing(AuthenticatedChangeBookingInstance wf, string data)
+		{
+			wf.BookingKey = data;
+		}
+
+		private void DisambiguateBooking(AuthenticatedChangeBookingInstance wf)
+		{
+			this.bus.Publish<StartDisambiguateMovieBooking>(new StartDisambiguateMovieBooking() { PhoneNumber = wf.PhoneNumber });
+		}
+
+		private void LookupBookings(AuthenticatedChangeBookingInstance instance)
+		{
+			int numBookings = 5;
+			this.RaiseEvent(instance, BookingsFound, numBookings);
 		}
 
 		public override void OnFailedAuthentication(AuthenticatedChangeBookingInstance instance)
@@ -70,5 +91,8 @@ namespace WorkflowService.Workflows
 		public State WaitingForBookingSelection { get; set; }
 		public State WaitingForConfirmation { get; set; }
 		public State Starting { get; set; }
+		public State WaitingForSelectionDisambiguation { get; set; }
+
+		public Event<int> BookingsFound { get; set; }
 	}
 }

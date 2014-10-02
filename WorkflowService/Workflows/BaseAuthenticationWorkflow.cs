@@ -59,31 +59,28 @@ namespace WorkflowService.Workflows
 
 		private void AuthorizeCredentials(T wf)
 		{
-			if (wf.Surname == "Ken" && wf.DateOfBirth.Date == new DateTime())
-			{
+			//if (wf.Surname == "Ross" && wf.DateOfBirth.Date != null)
+			//{
 				this.TransitionToState(wf, Authorized);
-			}
-			else
-			{
-				this.TransitionToState(wf, Unauthorized);
-			}
+			//}
+			//else
+			//{
+			//	this.TransitionToState(wf, Unauthorized);
+			//}
 
 		}
 
 		private void ProcessDob(T wf, string data)
 		{
-			DateTime dob;
-			bool success = DateTime.TryParse(data, out dob);
-
-			if (success)
-			{
-				wf.DateOfBirth = dob;
+			//if (data == "01011990")
+			//{
+				wf.DateOfBirth = new DateTime();
 				this.RaiseEvent(wf, ValidResponse);
-			}
-			else
-			{
-				this.RaiseEvent(wf, InvalidResponse);
-			}
+			//}
+			//else
+			//{
+			//	this.RaiseEvent(wf, InvalidResponse);
+			//}
 		}
 
 		private void AskForDob(T instance)

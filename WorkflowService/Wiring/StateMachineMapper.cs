@@ -14,6 +14,7 @@ namespace WorkflowService.Wiring
 	{
 		IWorkflow GetStateMachine(Type type);
 		IWorkflow GetStateMachine(string keyword);
+		IWorkflow GetStateMachine(BaseInstance instance);
 		BaseInstance GetStateMachineInstance(string keyword);
 		bool MappingExists(string keyword);
 	}
@@ -38,13 +39,23 @@ namespace WorkflowService.Wiring
 		{
 			{ typeof(AuthenticatedChangeBookingInstance), (bus, commonWorkflowService) => new AuthenticatedChangeBookingWorkflow(bus, commonWorkflowService) },
 			{ typeof(Workflows.MovieBookingInstance), (bus, commonWorkflowService) => new Workflows.MovieBookingWorkflow(new MovieBookingService(bus), commonWorkflowService) },
-			{ typeof(Workflows.ForkInstance), (bus, commonWorkflowService) => new Workflows.ForkStateMachine(commonWorkflowService, bus) }
+			{ typeof(Workflows.ForkInstance), (bus, commonWorkflowService) => new Workflows.ForkStateMachine(commonWorkflowService, bus) },
+			{ typeof(Workflows.DisambiguateMovieBookingInstance), (bus, commonWorkflowService) => new Workflows.DisambiguateMovieBookingWorkflow(commonWorkflowService, bus) }
 		};
 
 		public StateMachineMapper(IBus bus, ICommonWorkflowService commonWorkflowService)
 		{
 			this.bus = bus;
 			this.commonWorkflowService = commonWorkflowService;
+		}
+
+		public IWorkflow GetStateMachine(BaseInstance instance)
+		{
+			if (instance == null)
+			{
+				return null;
+			}
+			return GetStateMachine(instance.GetType());
 		}
 
 		public IWorkflow GetStateMachine(Type type)

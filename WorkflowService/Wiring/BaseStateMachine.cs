@@ -26,7 +26,8 @@ namespace WorkflowService.Wiring
 
 			Event(() => SMSReceived);
 			Event(() => Start);
-			Event(() => InvalidResponse);
+      Event(() => InvalidResponse);
+      Event(() => ValidResponse);
 
 			//Ideally we would setup common event handlers here e.g. InvalidResponse should fire the SendUnknownResponse method
 			//this could be done by implementing an AbstractFactory to create the actual State Machine, see http://stackoverflow.com/a/2747280
@@ -40,6 +41,7 @@ namespace WorkflowService.Wiring
 		public Event<string> SMSReceived { get; set; }
 		public Event<string> Start { get; set; }
 		public Event InvalidResponse { get; set; }
+    public Event ValidResponse { get; set; }
 
 		public void RaiseAnEvent(BaseInstance instance, Event<string> @event, string data)
 		{

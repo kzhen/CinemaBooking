@@ -30,7 +30,6 @@ namespace WorkflowService.Workflows
 			State(() => WaitingForSlotSelection);
 			State(() => Completed);
 
-			Event(() => ValidResponse);
 			Event(() => MoreSlotsRequested);
 
 			//Ideally we would have this in the BaseStateMachine, however it needs to be executed after all of the States have been setup
@@ -124,7 +123,6 @@ namespace WorkflowService.Workflows
 		public State WaitingForMovieSelection { get; set; }
 		public State WaitingForSlotSelection { get; set; }
 		public State Completed { get; set; }
-		public Event ValidResponse { get; set; }
 		public Event MoreSlotsRequested { get; set; }
 	}
 }

@@ -15,6 +15,7 @@ namespace WorkflowService.Workflows
 	{
 		public string BookingKey { get; set; }
 	}
+
 	internal class AuthenticatedChangeBookingWorkflow : BaseAuthenticationWorkflow<AuthenticatedChangeBookingInstance> //BaseStateMachine<ChangeBookingInstance>
 	{
 		private readonly IBus bus;
@@ -26,7 +27,6 @@ namespace WorkflowService.Workflows
 			State(() => WaitingForBookingSelection);
 			State(() => WaitingForConfirmation);
 			State(() => Starting);
-			Event(() => ValidResponse);
 
 			During(Starting,
 				When(Starting.Enter)

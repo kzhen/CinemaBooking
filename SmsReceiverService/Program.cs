@@ -20,6 +20,9 @@ namespace SmsReceiverService
 
 			string input = string.Empty;
 
+      Console.WriteLine("Ready...");
+      Console.WriteLine();
+
 			do
 			{
 				input = Console.ReadLine();
@@ -54,7 +57,7 @@ namespace SmsReceiverService
 
 		private static void ParseCommand(string input)
 		{
-			if (input.StartsWith("!PH"))
+			if (input.StartsWith("!PH", StringComparison.InvariantCultureIgnoreCase) && input.Length > 3)
 			{
 				phoneNumber = input.Substring(4);
 				Console.WriteLine("New phonenumber: {0}", phoneNumber);

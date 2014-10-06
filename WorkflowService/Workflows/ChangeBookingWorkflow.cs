@@ -15,6 +15,7 @@ namespace WorkflowService.Workflows
 	{
 		public string BookingKey { get; set; }
 	}
+
 	internal class ChangeBookingWorkflow : BaseStateMachine<ChangeBookingInstance>
 	{
 		private readonly IBus bus;
@@ -24,8 +25,6 @@ namespace WorkflowService.Workflows
 			this.bus = bus;
 
 			State(() => WaitingForBookingSelection);
-
-			Event(() => ValidResponse);
 
 			Initially(When(Start)
 				.Then((wf, phoneNumber) => wf.PhoneNumber = phoneNumber)
@@ -58,7 +57,5 @@ namespace WorkflowService.Workflows
 
 		public State WaitingForBookingSelection { get; set; }
 		public State WaitingForConfirmation { get; set; }
-
-		public Event ValidResponse { get; set; }
 	}
 }

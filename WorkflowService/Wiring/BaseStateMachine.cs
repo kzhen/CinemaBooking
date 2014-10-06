@@ -14,8 +14,8 @@ namespace WorkflowService.Wiring
 		public State CurrentState { get; set; }
 	}
 
-	public abstract class BaseStateMachine<T> : AutomatonymousStateMachine<T>, IWorkflow
-		where T : BaseInstance
+	public abstract class BaseStateMachine<TInstance> : AutomatonymousStateMachine<TInstance>, IWorkflow
+		where TInstance : BaseInstance
 	{
 		private ICommonWorkflowService commonWorkflowServer;
 		public BaseStateMachine(ICommonWorkflowService commonWorkflowService)
@@ -33,7 +33,7 @@ namespace WorkflowService.Wiring
 			//this could be done by implementing an AbstractFactory to create the actual State Machine, see http://stackoverflow.com/a/2747280
 		}
 
-		protected virtual void SendUnknownResponse(T instance)
+		protected virtual void SendUnknownResponse(TInstance instance)
 		{
 			this.commonWorkflowServer.SendUnknownResponse(instance.PhoneNumber);
 		}
@@ -43,15 +43,14 @@ namespace WorkflowService.Wiring
 		public Event InvalidResponse { get; set; }
     public Event ValidResponse { get; set; }
 
-		public void RaiseAnEvent(BaseInstance instance, Event<string> @event, string data)
+		public void RaiseAnEvent<T>(BaseInstance instance, Event<T> @event, T data)
 		{
-			this.RaiseEvent(instance as T, @event, data);
+			this.RaiseEvent(instance as TInstance, @event, data);
 		}
 
 		public void RaiseAnEvent(BaseInstance instance, Event @event)
 		{
-			this.RaiseEvent(instance as T, @event);
+			this.RaiseEvent(instance as TInstance, @event);
 		}
-
 	}
 }

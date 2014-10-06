@@ -64,34 +64,34 @@ namespace WorkflowServiceTests
 		}
 	}
 
-	[TestClass]
-	public class CancelBookingWorkflowTests
-	{
-		[TestMethod]
-		public void Base_Class_Events_Should_Be_Set()
-		{
-			InMemoryBus bus = new InMemoryBus();
-			ICommonWorkflowService commonWorkflowService = Mock.Of<ICommonWorkflowService>();
+  //[TestClass]
+  //public class CancelBookingWorkflowTests
+  //{
+  //  [TestMethod]
+  //  public void Base_Class_Events_Should_Be_Set()
+  //  {
+  //    InMemoryBus bus = new InMemoryBus();
+  //    ICommonWorkflowService commonWorkflowService = Mock.Of<ICommonWorkflowService>();
 
-			CancelBookingWorkflow wf = new CancelBookingWorkflow(bus, commonWorkflowService);
+  //    CancelBookingWorkflow wf = new CancelBookingWorkflow(bus, commonWorkflowService);
 
-			Assert.IsNotNull(wf.Start);
-			Assert.IsNotNull(wf.SMSReceived);
-		}
+  //    Assert.IsNotNull(wf.Start);
+  //    Assert.IsNotNull(wf.SMSReceived);
+  //  }
 
-		[TestMethod]
-		public void Should_send_list_of_reservations()
-		{
-			InMemoryBus bus = new InMemoryBus();
-			ICommonWorkflowService commonWorkflowService = Mock.Of<ICommonWorkflowService>();
+  //  [TestMethod]
+  //  public void Should_send_list_of_reservations()
+  //  {
+  //    InMemoryBus bus = new InMemoryBus();
+  //    ICommonWorkflowService commonWorkflowService = Mock.Of<ICommonWorkflowService>();
 
-			CancelBookingInstance instance = new CancelBookingInstance();
-			CancelBookingWorkflow wf = new CancelBookingWorkflow(bus, commonWorkflowService);
+  //    CancelBookingInstance instance = new CancelBookingInstance();
+  //    CancelBookingWorkflow wf = new CancelBookingWorkflow(bus, commonWorkflowService);
 
-			wf.RaiseEvent(instance, x => x.Start, "+447901234545");
+  //    wf.RaiseEvent(instance, x => x.Start, "+447901234545");
 
-			Assert.AreEqual(1, bus.PublishedMessages<SendSms>().Count);
-			Assert.AreEqual("Please select", bus.PublishedMessages<SendSms>().First().Body);
-		}
-	}
+  //    Assert.AreEqual(1, bus.PublishedMessages<SendSms>().Count);
+  //    Assert.AreEqual("Please select", bus.PublishedMessages<SendSms>().First().Body);
+  //  }
+  //}
 }

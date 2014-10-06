@@ -14,6 +14,6 @@ namespace WorkflowService.Wiring
 		State Final { get; }
 		State Initial { get; }
 		void RaiseAnEvent(BaseInstance instance, Event @event);
-		void RaiseAnEvent(BaseInstance instance, Event<string> @event, string data);
+		void RaiseAnEvent<T>(BaseInstance instance, Event<T> @event, T data);
 	}
 }

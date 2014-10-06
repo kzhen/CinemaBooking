@@ -3,14 +3,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace WorkflowService.Wiring
 {
 	public interface IWorkflow
 	{
-		Event<string> SMSReceived { get; set; }
-		Event<string> Start { get; set; }
+		Event<string> SMSReceived { get; }
+		Event<string> Start { get; }
+		Event<string> Continue { get; }
 		State Final { get; }
 		State Initial { get; }
 		void RaiseAnEvent(BaseInstance instance, Event @event);

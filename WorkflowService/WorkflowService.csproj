@@ -58,11 +58,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Messages\DisambiguateMovieBookingFinished.cs" />
     <Compile Include="Messages\ForkFinished.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\ICommonWorkflowService.cs" />
     <Compile Include="Services\MovieBookingService.cs" />
+    <Compile Include="TopicHandler\DisambiguateMovieBookingHandler.cs" />
     <Compile Include="TopicHandler\ForkHandler.cs" />
     <Compile Include="TopicHandler\SmsHandler.cs" />
     <Compile Include="Wiring\BaseStateMachine.cs" />
@@ -72,9 +74,11 @@
     <Compile Include="Services\IMovieBookingService.cs" />
     <Compile Include="Workflows\AuthenticatedChangeBookingWorkflow.cs" />
     <Compile Include="Workflows\ChangeBookingWorkflow.cs" />
+    <Compile Include="Workflows\DisambiguateMovieBookingWorkflow.cs" />
     <Compile Include="Workflows\ForkStateMachine.cs" />
     <Compile Include="Workflows\MovieBookingWorkflow.cs" />
     <Compile Include="Workflows\BaseAuthenticationWorkflow.cs" />
+    <Compile Include="Messages\StartDisambiguateMovieBooking.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

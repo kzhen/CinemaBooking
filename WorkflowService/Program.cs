@@ -25,9 +25,13 @@ namespace WorkflowService
 
 			SmsHandler smsHandler = new SmsHandler(stateMachineMapper, bus, instanceRepository);
       ForkHandler forkHandler = new ForkHandler(instanceRepository, stateMachineMapper);
+			DisambiguateMovieBookingHandler disambiguateHandler = new DisambiguateMovieBookingHandler(instanceRepository, stateMachineMapper);
 
 			bus.Subscribe<SmsReceived>("workflow-service", smsHandler.Handle);
       bus.Subscribe<ForkFinished>("workflow-service", forkHandler.Handle);
+			
+			bus.Subscribe<StartDisambiguateMovieBooking>("workflow-service", disambiguateHandler.Handle);
+			bus.Subscribe<DisambiguateMovieBookingFinished>("workflow-service", disambiguateHandler.Handle);
 
 			Console.ReadKey();
 		}
